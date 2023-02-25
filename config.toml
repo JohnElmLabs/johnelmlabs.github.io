@@ -1,4 +1,4 @@
 baseURL = 'https://johnelmlabs.com/'
 languageCode = 'en-us'
 title = 'John Elm Labs - Elixir, Phoenix, & LiveView Experts'
-theme = 'ananke'
+theme = 'up-business-theme'

@@ -2,7 +2,7 @@
 <html lang="en" data-bs-theme="dark">
   <head>
   
-  <title>John Elm Labs - Elixir, Phoenix, &amp; LiveView Experts  | Categories </title>
+  <title>John Elm Labs - Elixir, Phoenix, &amp; LiveView Experts  | Phoenix LiveView Anti Patterns </title>
 
   
   <meta charset="UTF-8" />
@@ -20,11 +20,22 @@
   
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Categories"/>
-<meta name="twitter:description" content="Powerful, extensible, and feature-packed frontend toolkit. Build and customize with Sass, utilize prebuilt grid system and components, and bring projects to life with powerful JavaScript plugins."/>
+<meta name="twitter:title" content="Phoenix LiveView Anti Patterns"/>
+<meta name="twitter:description" content="Let&rsquo;s make some common mistakes and see how to fix them
+Do not operate on the socket in LiveViews or LiveComponents The concern of a LiveView and LiveComponent is the socket&rsquo;s assigns - not the socket itself.
+Never pass around the socket struct in LiveViews and LiveComponents.
+What ends up happening, inevitably, is the method that receives the socket pattern matches on the assigns of the received socket argument.
+This is bad for a couple of reasons:"/>
 
-<meta itemprop="name" content="Categories">
-<meta itemprop="description" content="Powerful, extensible, and feature-packed frontend toolkit. Build and customize with Sass, utilize prebuilt grid system and components, and bring projects to life with powerful JavaScript plugins.">
+<meta itemprop="name" content="Phoenix LiveView Anti Patterns">
+<meta itemprop="description" content="Let&rsquo;s make some common mistakes and see how to fix them
+Do not operate on the socket in LiveViews or LiveComponents The concern of a LiveView and LiveComponent is the socket&rsquo;s assigns - not the socket itself.
+Never pass around the socket struct in LiveViews and LiveComponents.
+What ends up happening, inevitably, is the method that receives the socket pattern matches on the assigns of the received socket argument.
+This is bad for a couple of reasons:"><meta itemprop="datePublished" content="2023-02-25T13:37:13-06:00" />
+<meta itemprop="dateModified" content="2023-02-25T13:37:13-06:00" />
+<meta itemprop="wordCount" content="1792">
+<meta itemprop="keywords" content="" />
 
 
 
@@ -80,7 +91,6 @@
 
 
   
-  <link rel="alternate" type="application/rss+xml" href="https://johnelmlabs.com/categories/index.xml" title="John Elm Labs - Elixir, Phoenix, & LiveView Experts" />
   </head>
 
   <body class="d-flex flex-column min-vh-100"><nav class="navbar navbar-expand-lg py-3">
@@ -103,13 +113,288 @@
 
 <main class="container py-5 flex-grow-1">
   <div class="row justify-content-center">
-    <div class="col-12 mh-100">
-      
-      
+    <div class="col-12 mw-md mh-100">
+      <div class="py-4">
+        <div class="py-2">
+          <h1 class="display-1 text-center text-uppercase fw-bold text-primary">
+            Phoenix LiveView Anti Patterns
+          </h1>
+          <div class="text-center text-muted mb-1">
+  
+  
+    <span class="d-inline-flex align-items-center small mx-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-stopwatch-fill me-1" viewBox="0 0 16 16">
+        <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07A7.001 7.001 0 0 0 8 16a7 7 0 0 0 5.29-11.584.531.531 0 0 0 .013-.012l.354-.354.353.354a.5.5 0 1 0 .707-.707l-1.414-1.415a.5.5 0 1 0-.707.707l.354.354-.354.354a.717.717 0 0 0-.012.012A6.973 6.973 0 0 0 9 2.071V1h.5a.5.5 0 0 0 0-1h-3zm2 5.6V9a.5.5 0 0 1-.5.5H4.5a.5.5 0 0 1 0-1h3V5.6a.5.5 0 1 1 1 0z"/>
+      </svg>
+      9 min read
+    </span>
+  
+  
+    <span class="d-inline-flex align-items-center small mx-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-calendar-fill me-1" viewBox="0 0 16 16">
+        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5h16V4H0V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5z"/>
+      </svg>
+      February 25, 2023
+    </span>
+  
+  
+    <span class="d-inline-flex align-items-center small mx-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-text-left me-1" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+      1792 words
+    </span>
+  
+</div>
+
+          <div class="text-center">
+  
+</div>
+
+        </div>
+        <div class="lead text-center py-2">
+          Let&rsquo;s make some common mistakes and see how to fix them
+Do not operate on the socket in LiveViews or LiveComponents The concern of a LiveView and LiveComponent is the socket&rsquo;s assigns - not the socket itself.
+Never pass around the socket struct in LiveViews and LiveComponents.
+What ends up happening, inevitably, is the method that receives the socket pattern matches on the assigns of the received socket argument.
+This is bad for a couple of reasons:
+        </div>
+        <div class="markdown-content py-2">
+          <p>Let&rsquo;s make some common mistakes and see how to fix them</p>
+<h2 id="do-not-operate-on-the-socket-in-liveviews-or-livecomponents">Do not operate on the socket in LiveViews or LiveComponents</h2>
+<p>The concern of a LiveView and LiveComponent is the socket&rsquo;s assigns - not the socket itself.</p>
+<p>Never pass around the socket struct in LiveViews and LiveComponents.</p>
+<p>What ends up happening, inevitably, is the method that receives the socket pattern matches on the assigns of the received socket argument.</p>
+<p>This is bad for a couple of reasons:</p>
+<ul>
+<li>The method did not need the socket struct</li>
+<li>The method is now dependent on the state of the socket assigns when it&rsquo;s invoked
+<ul>
+<li>You will create a &ldquo;No Function Clause&rdquo; matching error if you try to invoke that method when the assigns do not match</li>
+<li>Good luck tracking down the &ldquo;sometimes I&rsquo;m missing an assign&rdquo; bug when the function is called</li>
+</ul>
+</li>
+</ul>
+<p>What do I do instead?</p>
+<ul>
+<li>Compute values before they are assigned to the socket</li>
+</ul>
+<p>// TODO: This should have an assign that depends on a previous assign
+// And the &ldquo;what to do instead&rdquo; example should pull both dependencies out</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#75715e"># Do not:</span>
+</span></span><span style="display:flex;"><span>socket
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|&gt;</span> assign_some_stuff()
+</span></span><span style="display:flex;"><span><span style="color:#f92672">|&gt;</span> more_business_rules()
+</span></span></code></pre></div><p>Instead:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span>department_name <span style="color:#f92672">=</span> <span style="color:#a6e22e">Repo</span><span style="color:#f92672">.</span>get_by(<span style="color:#a6e22e">Department</span>, <span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Accounting&#34;</span>)
+</span></span><span style="display:flex;"><span>socket <span style="color:#f92672">=</span> assign(socket, <span style="color:#e6db74">:department_name</span>, department_name)
+</span></span></code></pre></div><h4 id="note">Note</h4>
+<p>There are LiveView methods that annotate the socket (for redirects, etc). These are obviously fine to pass the socket to.
+As a rule of thumb: Phoenix LiveView can operate on the socket, your application should not</p>
+<h2 id="do-not-abuse-function-head-pattern-matching">Do Not Abuse Function Head Pattern Matching</h2>
+<p>Pattern matching should be used as control flow - not an unwrap every value to be used party
+Binding every variable in a <code>params</code> or <code>socket.assigns</code> on LiveView or LiveComponent callbacks is messy and obscures intent
+Further, if a function head fails to bind, you will get a cryptic &ldquo;No Function Clause Matching&rdquo; error and you get to play &ldquo;dig through the stacktrace&rdquo; and painstakingly determine not only which function head should have been taken, but which pattern-matched value was missing</p>
+<p>Imagine you have a new user form with several inputs. This form is fairly simple, but there are many different code paths and side effects to do - because you have many different ways your user could authenticate. Username/password, OAuth, Google, Facebook, Sign in with Apple, etc.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">.form</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form}</span> <span style="color:#a6e22e">phx-change</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;validate&#34;</span> <span style="color:#a6e22e">phx-submit</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;create-user&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:username]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:password]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:phone]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;select&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:authorization_options]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;checkbox&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:likes_happy_hour]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;select&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:permission_level]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;checkbox&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:is_admin]}/</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">.input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">field</span><span style="color:#f92672">=</span><span style="color:#e6db74">{@form[:oauth_api_key]}/</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">.form</span>&gt;
+</span></span></code></pre></div><p>In this example, there are slightly different validation rules based on which authorization type people are using to sign in.</p>
+<p>You like to keep your method bodies slim, and you want to unwrap the user&rsquo;s attributes in the function head when validating their attributes:</p>
+<p>Can you tell, at a glance, which function head you will take if we want to sign in with facebook?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;yubikey&#34;</span>, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;saml&#34;</span>, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;apple&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;facebook&#34;</span>, <span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;google&#34;</span>, <span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone, <span style="color:#e6db74">&#34;likes_happy_hour&#34;</span> <span style="color:#f92672">=&gt;</span> likes_happy_hour} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;oauth&#34;</span>, <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;username_password&#34;</span>, <span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin, <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level, <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password, <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Validate and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>The above example violates the principle of &ldquo;pattern matching as flow control&rdquo;.</p>
+<h3 id="what-to-do-instead">What to do Instead</h3>
+<p>Only pattern-match what is necessary to determine which code path to take.
+After that, pattern-match within the function body
+In this way, you:</p>
+<ul>
+<li>Clearly communicate intent on the code path to be taken</li>
+<li>Improve error messages: You will receive a &ldquo;MatchError&rdquo; instead of a &ldquo;No Function Clause Matching&rdquo;. Now you know exactly which function head failed to match, because you get an accurate line number in the stacktrace</li>
+</ul>
+<p>Take the above example and rework the function heads to unwrap just enough to determine which code path to take:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;yubikey&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  %{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;google&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;likes_happy_hour&#34;</span> <span style="color:#f92672">=&gt;</span> likes_happy_hour
+</span></span><span style="display:flex;"><span>  } <span style="color:#f92672">=</span> params
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;saml&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  %{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;permission_level&#34;</span> <span style="color:#f92672">=&gt;</span> permission_level,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;google&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;is_admin&#34;</span> <span style="color:#f92672">=&gt;</span> is_admin,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#f92672">=&gt;</span> username,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">=&gt;</span> password,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;phone&#34;</span> <span style="color:#f92672">=&gt;</span> phone,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;likes_happy_hour&#34;</span> <span style="color:#f92672">=&gt;</span> likes_happy_hour
+</span></span><span style="display:flex;"><span>  } <span style="color:#f92672">=</span> params
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;apple&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Unwrap params, validate, and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;facebook&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Unwrap params, validate, and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;google&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Unwrap params, validate, and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;oauth&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Unwrap params, validate, and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(<span style="color:#e6db74">&#34;validate&#34;</span>, %{<span style="color:#e6db74">&#34;authorization_options&#34;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;username_password&#34;</span>} <span style="color:#f92672">=</span> params, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Unwrap params, validate, and return</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>You can now quickly scan the function heads and you know exactly which one to jump into - your function heads and teammates will thank you.</p>
+<h2 id="you-have-n--1-queries-in-your-livecomponents">You Have N + 1 Queries In Your LiveComponents</h2>
+<p>Consider a LiveComponent that displays information (and allows you to change) a user - It accepts the user as an assign
+You&rsquo;d like to encapsulate not have the LiveView responsible for user changesets and handling form actions, so you make that the responsibility of the LiveComponent.
+Your component looks something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#75715e"># UsersLive.ex</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;.</span>live_component <span style="color:#e6db74">:for</span><span style="color:#f92672">=</span>{user <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">@users</span>} id<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;user-detail-</span><span style="color:#e6db74">#{</span>user<span style="color:#f92672">.</span>id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>} module<span style="color:#f92672">=</span>{<span style="color:#a6e22e">UserDetailComponent</span>} user<span style="color:#f92672">=</span>{user} <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># UserDetailComponent.ex</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> update(assigns, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  %{<span style="color:#e6db74">user</span>: user} <span style="color:#f92672">=</span> assigns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># List departments the user belongs to</span>
+</span></span><span style="display:flex;"><span>  departments <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Department</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|&gt;</span> where([d], d<span style="color:#f92672">.</span>id <span style="color:#f92672">in</span> <span style="color:#f92672">^</span>user<span style="color:#f92672">.</span>department_ids)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">Repo</span><span style="color:#f92672">.</span>all()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  socket <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    socket
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|&gt;</span> assign(<span style="color:#e6db74">:user</span>, user)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|&gt;</span> assign(<span style="color:#e6db74">:departments</span>, departments)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  {<span style="color:#e6db74">:ok</span>, socket}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>Did you spot the problem? It&rsquo;s subtle, and it&rsquo;s killing your app&rsquo;s performance</p>
+<p>The <code>Repo</code> operation is an N + 1 Query (Normally that logic would be wrapped in a Context. It&rsquo;s illustrative)</p>
+<p>Every User rendered on the page issues a DB query. 10 users? That&rsquo;s 10 queries, plus 1 for the LiveView to get all Users (<code>:for={user &lt;- @users}</code>) 25 users? That&rsquo;s 26 queries. You get the picture.</p>
+<h3 id="what-to-do-instead-1">What to do Instead</h3>
+<p>// TODO: Link to preload/1
+The preload/1 callback was designed exactly for this purpose.</p>
+<p>Preload takes as its only argument a list of each components assigns. It returns an updated list of assigns which the component receives in its update/2 callback</p>
+<p>From our above example, <code>UserDetailComponent</code> should now look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> preload(list_of_assigns) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  user_ids <span style="color:#f92672">=</span> <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>map(list_of_assigns, <span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>user<span style="color:#f92672">.</span>id)
+</span></span><span style="display:flex;"><span>  departments <span style="color:#f92672">=</span> <span style="color:#a6e22e">Repo</span><span style="color:#f92672">.</span>all(<span style="color:#a6e22e">Department</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>map(list_of_assigns, <span style="color:#66d9ef">fn</span> assigns <span style="color:#f92672">-&gt;</span>
+</span></span><span style="display:flex;"><span>    %{<span style="color:#e6db74">user</span>: user} <span style="color:#f92672">=</span> assigns
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>put(assigns, <span style="color:#e6db74">:departments</span>, <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>map(departments, <span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>id <span style="color:#f92672">in</span> user<span style="color:#f92672">.</span>department_ids))
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">end</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> update(assigns, socket) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># The user&#39;s departments are available in the assigns!</span>
+</span></span><span style="display:flex;"><span>  %{<span style="color:#e6db74">user</span>: user, <span style="color:#e6db74">departments</span>: departments} <span style="color:#f92672">=</span> assigns
+</span></span><span style="display:flex;"><span>  {<span style="color:#e6db74">:noreply</span>, assign(socket, <span style="color:#e6db74">user</span>: user, <span style="color:#e6db74">departments</span>: departments)}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><h2 id="indexing-its-not-just-for-databases">Indexing: It&rsquo;s not just for databases</h2>
+<p>// TODO: Put a note about use the index, Luke
+// TODO: Put a link about The Art of PostgreSQL</p>
+<p>Imagine you&rsquo;re working on BusinessAppWeb and you want to add a button that alters a boolean field in an widget. There are lots of widgets, and each one has its own button. These widgets are stored server-side in a list, <code>@widgets</code>. Your users love these buttons, and submit hundreds of click events every second.</p>
+<p>Working with lists underpins the heart and soul of Elixir. Inevitably, these lists are going to get large. You undoubtedly have code like this eating up your CPU cycles:</p>
+<p>A fairly common scenario you will find in Elixir is retrieving an element from a list of elements based on some attribute (say a database ID).</p>
+<p>That&rsquo;s pretty easy to take care of:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> handle_event(socket, params) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  %{<span style="color:#e6db74">&#34;user-id&#34;</span> <span style="color:#f92672">=&gt;</span> user_id} <span style="color:#f92672">=</span> params
+</span></span><span style="display:flex;"><span>  user <span style="color:#f92672">=</span> <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>find(users, <span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>id <span style="color:#f92672">==</span> user_id)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>Did you spot the problem?</p>
+<p>Every <code>Enum.find</code> is an <code>O(n)</code> operation &ndash; When your lists get large (and they will), you&rsquo;ll be burning CPU cycles for nothing.
+The lack of an explicit loop construct causes people, especially those new to Elixir, to accidentally write <code>O(n^2)</code> (or even <code>O(n^3)</code>!) algorithms.</p>
+<p>For instance, say we want to build a map of our users and who referred them to our decentralized blockchain NFT mastodon instance metaverse trading platform algorithm:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>reduce(users, %{}, <span style="color:#66d9ef">fn</span> user, acc <span style="color:#f92672">-&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>put(acc, user, <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>find(users, <span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>id <span style="color:#f92672">==</span> user<span style="color:#f92672">.</span>referred_user_id))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>)
+</span></span></code></pre></div><p>We have now unwittingly created an <code>O(n^2)</code> algorithm in just 3 lines. Thankfully, because your social media platform is decentralized, only your instance is suffering awful performance. The rest are humming along just fine. The resiliency of decentralization has been proven and you may rest easy knowing that you&rsquo;ve accomplished your mission.</p>
+<h3 id="what-to-do-instead-2">What to do instead</h3>
+<p>Enter <code>index_by</code>, 5 lines of code that will change your life. It is the missing addition to the Elixir <code>Enum</code> module. Think of it like <code>Enum.group_by</code> where the key points to a single value instead of a list.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> index_by(collection, key_fun, value_fun \\ <span style="color:#66d9ef">fn</span> v <span style="color:#f92672">-&gt;</span> v <span style="color:#66d9ef">end</span>) <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>  collection
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>map(<span style="color:#f92672">&amp;</span>{key_fun<span style="color:#f92672">.</span>(&amp;1), value_fun<span style="color:#f92672">.</span>(&amp;1)})
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>into(<span style="color:#960050;background-color:#1e0010">%</span>())
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>It is extraordinarily helpful when working with any collection that has a unique attribute (e.g. Ecto schemas with a primary key):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span>users_by_id <span style="color:#f92672">=</span> index_by(<span style="color:#f92672">&amp;</span> &amp;1<span style="color:#f92672">.</span>id)
+</span></span></code></pre></div><p>// TODO: Reference time complexities of Elixir maps</p>
+<p>This small but simple change makes lets us use all of the <code>Map</code> operations (and its <code>O(n log n)</code>) performance when accessing elements in a collection.</p>
+<p>Consider our re-written examples from above and a couple of others:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elixir" data-lang="elixir"><span style="display:flex;"><span><span style="color:#75715e"># Find a user given an ID:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Was O(n), is now O(n log n)</span>
+</span></span><span style="display:flex;"><span>user <span style="color:#f92672">=</span> users_by_id[user_id]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create a mapping for our DBNFTNMI (Decentralized blockchain NFT mastadon metaverse instance):</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Was O(n^2), is now O(n)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Enum</span><span style="color:#f92672">.</span>reduce(users, %{}, <span style="color:#66d9ef">fn</span> user <span style="color:#f92672">-&gt;</span> <span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>put(acc, <span style="color:#e6db74">:user</span>, users[user<span style="color:#f92672">.</span>referred_user_id]) <span style="color:#66d9ef">end</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Retrieve a list of users given a list of IDs:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># O(n log n) versus Enum.filter - O(n)</span>
+</span></span><span style="display:flex;"><span>user_ids <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>take(users_by_id, user_ids)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># I want my list of users back:</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>values(users_by_id)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># I want all user IDs:</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>keys(users_by_id)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Filter out users</span>
+</span></span><span style="display:flex;"><span>non_admin_user_ids <span style="color:#f92672">=</span> [<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">11</span>, <span style="color:#ae81ff">12</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span><span style="color:#f92672">.</span>drop(non_admin_users)
+</span></span></code></pre></div><p><code>index_by/2</code> is ridiculously helpful. I am willing to wager there are some optimizations you can make in your codebase with <code>index_by/2</code> at your side.</p>
+<h2 id="conclusion">Conclusion</h2>
+
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    
   </div>
 </main>
 <footer>

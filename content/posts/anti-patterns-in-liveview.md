@@ -4,7 +4,7 @@ date: 2023-02-25T13:37:13-06:00
 draft: true
 ---
 
-Let's make some common mistakes and see how to fix them
+Phoenix LiveView, built on top of Elixir GenServers, represents a new paradigm for building web applications. It is extremely powerful, but there are common mistakes many people make when writing LiveView. Let's take a look at some of the most common mistakes and how to remedy them
 
 ## Do not operate on the socket in LiveViews or LiveComponents
 
@@ -43,7 +43,9 @@ socket = assign(socket, :department_name, department_name)
 There are LiveView methods that annotate the socket (for redirects, etc). These are obviously fine to pass the socket to.
 As a rule of thumb: Phoenix LiveView can operate on the socket, your application should not
 
-## Do Not Abuse Function Head Pattern Matching
+## Function Head Pattern Matching Abuse
+
+Elixir's pattern matching is extremely expressive and powerful. With great power comes great responsibility.
 
 Pattern matching should be used as control flow - not an unwrap every value to be used party
 Binding every variable in a `params` or `socket.assigns` on LiveView or LiveComponent callbacks is messy and obscures intent
@@ -68,7 +70,7 @@ In this example, there are slightly different validation rules based on which au
 
 You like to keep your method bodies slim, and you want to unwrap the user's attributes in the function head when validating their attributes:
 
-Can you tell, at a glance, which function head you will take if we want to sign in with facebook?
+Can you tell which function head will be taken to sign in with facebook?
 
 ```elixir
 def handle_event("validate", %{"is_admin" => is_admin, "permission_level" => permission_level, "username" => username, "authorization_options" => "yubikey", "password" => password, "phone" => phone} = params, socket) do
@@ -108,9 +110,10 @@ Only pattern-match what is necessary to determine which code path to take.
 After that, pattern-match within the function body
 In this way, you:
 - Clearly communicate intent on the code path to be taken 
-- Improve error messages: You will receive a "MatchError" instead of a "No Function Clause Matching". Now you know exactly which function head failed to match, because you get an accurate line number in the stacktrace
+- Receive improved error messages
+  - Raises a `(MatchError)` instead of a `(FunctionClauseError) no function clause matching`. Now you know exactly which function head failed to match, because you get an accurate line number in the stacktrace
 
-Take the above example and rework the function heads to unwrap just enough to determine which code path to take:
+Avoid "function head soup" and only pattern match on what you need to determine which code path to take. Our re-worked example is now:
 
 ```elixir
 def handle_event("validate", %{"authorization_options" => "yubikey"} = params, socket) do
