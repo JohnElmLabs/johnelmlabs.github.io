@@ -14,13 +14,11 @@ What problems does this cause?
 - The function does not need the socket struct to compute its business logic (Violating the "You aren't gonna need it" principle)
 - The function is brittle, especially if it pattern matches on the `socket.assigns`. The function has an implicit dependency on the functions that were invoked before it, as well as the state of the `socket.assigns`.
   - You will receive a `(FunctionClauseError) no function clause matching` if you try to invoke that method when the assigns do not match
-    - These errors, especially with multiple function heads, are difficult to track down - We will cover that in more detail further down
+    - These errors, especially with multiple function heads, are difficult to debug - We will cover that in more detail further down
 
 // TODO: Link to YAGNI above
 
-### What do I do instead?
-Perform all business logic before assigning the results to the socket.
-Store the results in intermediate variables if one method requires the result of another.
+In the below example, we retrieve some data and perform a business calculation. We send the socket through the pipeline to get our data. We are breaking all of the rules laid out above:
 
 ```elixir
 # Avoid:
@@ -48,6 +46,7 @@ def list_users(socket) do
 end
 
 # The method does not actually need the socket. It needs the socket.assigns
+# This method will fail if it's called too early in the pipeline in the `mount/3` callback
 def do_widget_calculations(%Socket{} = _socket) do
   %{widgets: widgets, users: users, departments: departments} = assigns
   # Apply business logic
@@ -55,7 +54,9 @@ def do_widget_calculations(%Socket{} = _socket) do
 end
 ```
 
-Instead:
+### What do I do instead?
+Perform all business logic before assigning the results to the socket.
+Store the results in intermediate variables if one method requires the result of another.
 
 ```elixir
 def mount(_, _, socket) do
@@ -98,7 +99,16 @@ end
 ```
 
 #### Note
-There are LiveView methods that annotate the socket (for redirects, etc). These are obviously fine to pass the socket to.
+There are LiveView methods that annotate the socket (e.g. [push_navigate/2](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#push_navigate/2).
+You might be tempted to pass the socket inside of your business logic function to determine, e.g., where to send redirects (say, after a user's first successful sign-in). Instead of passing the socket, calculate the options inside of your business logic and pass them to the function that operates on the socket. For instance:
+
+```elixir
+def handle_event("sign-in", params, socket) do
+  %{to: url, replace: replace?} = business_logic_function(params)
+  {:noreply, push_navigate(socket, to: url, replace: replace?)}
+end
+```
+
 As a rule of thumb: Phoenix LiveView can operate on the socket, your application should not
 
 ## Function Head Pattern Matching Abuse
