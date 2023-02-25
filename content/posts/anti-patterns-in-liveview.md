@@ -6,37 +6,95 @@ draft: true
 
 Phoenix LiveView, built on top of Elixir GenServers, represents a new paradigm for building web applications. It is extremely powerful, but there are common mistakes many people make when writing LiveView. Let's take a look at some of the most common mistakes and how to remedy them
 
-## Do not operate on the socket in LiveViews or LiveComponents
+## Do not pass the socket as an argument to functions
 
-The concern of a LiveView and LiveComponent is the socket's assigns - not the socket itself.
+Never pass the socket struct to functions in LiveViews and LiveComponents. With the exception of the `socket.assigns` field, the Socket should be considered opaque. They are implementation details of LiveView that your application logic does not need to concern itself with.
 
-Never pass around the socket struct in LiveViews and LiveComponents.
+What problems does this cause?
+- The function does not need the socket struct to compute its business logic (Violating the "You aren't gonna need it" principle)
+- The function is brittle, especially if it pattern matches on the `socket.assigns`. The function has an implicit dependency on the functions that were invoked before it, as well as the state of the `socket.assigns`.
+  - You will receive a `(FunctionClauseError) no function clause matching` if you try to invoke that method when the assigns do not match
+    - These errors, especially with multiple function heads, are difficult to track down - We will cover that in more detail further down
 
-What ends up happening, inevitably, is the method that receives the socket pattern matches on the assigns of the received socket argument.
+// TODO: Link to YAGNI above
 
-This is bad for a couple of reasons:
-- The method did not need the socket struct
-- The method is now dependent on the state of the socket assigns when it's invoked
-    - You will create a "No Function Clause" matching error if you try to invoke that method when the assigns do not match
-    - Good luck tracking down the "sometimes I'm missing an assign" bug when the function is called
+### What do I do instead?
+Perform all business logic before assigning the results to the socket.
+Store the results in intermediate variables if one method requires the result of another.
 
-What do I do instead?
-- Compute values before they are assigned to the socket
-
-// TODO: This should have an assign that depends on a previous assign
-// And the "what to do instead" example should pull both dependencies out
 ```elixir
-# Do not:
-socket
-|> assign_some_stuff()
-|> more_business_rules()
+# Avoid:
+def mount(_, _, socket) do
+  socket =
+    socket
+    |> list_departments()
+    |> list_users()
+    |> list_widgets()
+    |> do_widget_calculations()
+
+  {:ok, socket}
+end
+
+def list_departments(socket) do
+  assign(socket, :departments, Repo.all(Department))
+end
+
+def list_widgets(socket) do
+  assign(socket, :widgets, Repo.all(Widget))
+end
+
+def list_users(socket) do
+  assign(socket, :users, Repo.all(User))
+end
+
+# The method does not actually need the socket. It needs the socket.assigns
+def do_widget_calculations(%Socket{} = _socket) do
+  %{widgets: widgets, users: users, departments: departments} = assigns
+  # Apply business logic
+  assign(socket, :business_result, business_result)
+end
 ```
 
 Instead:
 
 ```elixir
-department_name = Repo.get_by(Department, & &1.name == "Accounting")
-socket = assign(socket, :department_name, department_name)
+def mount(_, _, socket) do
+  departments = Repo.all(Department)
+  users = Repo.all(User)
+  widgets = Repo.all(Widget)
+  business_result = do_widget_calculations(departments, users, widgets)
+  socket =
+    socket
+    |> assign(:departments, departments)
+    |> assign(:users, users)
+    |> assign(:widgets, widgets)
+    |> assign(:business_result, business_result)
+  
+  {:ok, socket}
+end
+
+# Function now receives only dependencies that are required to calculate the business logic
+def do_widget_calculations(departments, users, widgets) do
+  # Calculate and return business logic
+end
+```
+
+Even better, `assign/2` accepts a map (or keyword list). Instead of a long pipeline with individual assigns, we can stuff everything into a map and pass that to `assign/2`.
+
+Now our LiveView looks like this:
+
+```elixir
+def mount(_, _, socket) do
+  {:ok, assign(socket, do_widget_calculations())}
+end
+
+def do_widget_calculations do
+  departments = Repo.all(Department)
+  users = Repo.all(User)
+  widgets = Repo.all(Widget)
+  business_result = MyApp.do_widget_calculations(departments, users, widgets)
+  %{departments: departments, users: users, widgets: widgets, business_result: business_result}
+end
 ```
 
 #### Note
@@ -49,7 +107,7 @@ Elixir's pattern matching is extremely expressive and powerful. With great power
 
 Pattern matching should be used as control flow - not an unwrap every value to be used party
 Binding every variable in a `params` or `socket.assigns` on LiveView or LiveComponent callbacks is messy and obscures intent
-Further, if a function head fails to bind, you will get a cryptic "No Function Clause Matching" error and you get to play "dig through the stacktrace" and painstakingly determine not only which function head should have been taken, but which pattern-matched value was missing
+Further, if a function head fails to bind, you will get a cryptic "No Function Clause Matching" error and you get to play "dig through the stacktrace" and painstakingly reverse engineer not only which function head should have been taken, but which pattern-matched value was missing
 
 Imagine you have a new user form with several inputs. This form is fairly simple, but there are many different code paths and side effects to do - because you have many different ways your user could authenticate. Username/password, OAuth, Google, Facebook, Sign in with Apple, etc.
 
