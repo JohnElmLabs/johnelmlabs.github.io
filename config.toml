@@ -1,5 +1,11 @@
 baseURL = 'https://johnelmlabs.github.io/'
 languageCode = 'en-us'
 title = 'John Elm Labs - Elixir, Phoenix, & LiveView Experts'
-theme = 'up-business-theme'
+theme = 'PaperMod'
 summaryLength = 20
+
+[[menu.main]]
+identifier = "about"
+name = "About"
+url = "/about/"
+weight = 10
