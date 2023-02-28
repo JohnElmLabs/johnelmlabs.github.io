@@ -243,15 +243,6 @@ end
 The function heads can be scanned quickly and easily - saving time and frustration.
 
 ## Indexing: Not Just For the Database
-// TODO: Put a note about use the index, Luke
-
-// TODO: Put a link about The Art of PostgreSQL
-
-// TODO: Double check the big O performance of MapSet
-
-// TODO: Turn this into the multi-selector example we are dealing with right now. Terrible performance on something most people don't interact with much
-
-// TODO: Don't talk shit on the performance of Elixir list APIs. the APIs are performant - it's just that lists are O(n) by default
 
 Working with lists underpins functional programming and Elixir is no different. Inevitably, these lists are going to get large. The `List` & `Enum` modules have several methods for working with lists including, but not limited to:
 
@@ -267,27 +258,27 @@ Working with lists underpins functional programming and Elixir is no different. 
 
 Lists, unlike arrays, are not stored contiguously in memory. As such, they must be iterated on in order to retrieve values. This means performance degrades linearly as the list grows due to the `O(n)` time complexity.
 
-Consider the scenario where you want to find a struct from a list of structs given an ID. When a user selects a department from the select dropdown, we want to find it in our list of all departments:
+Consider a scenario where a department is retrieved from a list of departments when a user selects a department from a dropdown. When a user selects a department from the dropdown, the `handle_event/3` callback receives its ID.
 
-That's pretty easy to take care of, and in a dev environment with a relatively low number of departments, works well:
+That's pretty easy to take care of, and in a dev environment with a relatively low number of departments, `Enum.find/3` does the job well:
 
 ```elixir
 def handle_event("select-department", params, socket) do
   %{"department-id" => department_id} = params
   %{departments: departments} = socket.assigns
   department = Enum.find(departments, & &1.id == department_id)
-  # Do stuff with the department struct
-  {:noreply, socket}
+
+  {:noreply, assign(socket, :selected_department, department)}
 end
 ```
 
-However, performance is going to suffef in a production environment when customers who have hundreds, or even thousands, of departments (or any list item) are using the application.
+The problem is performance is going to suffer in a production environment when customers who have hundreds, or even thousands, of departments (or any list item) are using the application.
 
-This is particularly problematic because the lack of an explicit C-style loop construct makes it easier to accidentally write `O(n^2)` (or even `O(n^3)`) "loops" in Elixir, especially for those new to the language.
+This is particularly problematic because the lack of an explicit C-style loop construct makes it easier to incidentally write inefficient "loops" in Elixir, especially for those new to the language.
 
 ### Example
 
-To build a map of `%{department => parent_department}`, a first pass implementation might look like:
+To show a basic hierarchy of departments, one could build a map of `%{department => parent_department}`. A first pass might look like:
 
 ```elixir
 Enum.reduce(departments, %{}, fn department, acc ->
@@ -295,7 +286,7 @@ Enum.reduce(departments, %{}, fn department, acc ->
 end)
 ```
 
-The above has a time complexity of `O(n^2)` algorithm in just 3 lines. This code can hide deep in a LiveView or LiveComponent callstack and degrade your app's performance significantly.
+The above has a time complexity of `O(n^2)` algorithm in just 3 lines. The entire list of departments must be iterated in `Enum.reduce` and then again, for each department, in `Enum.find`. This code can hide deep in a LiveView or LiveComponent callstack and degrade application performance significantly.
 
 ### What to do instead
 
@@ -309,7 +300,7 @@ def index_by(collection, key_fun, value_fun \\ fn v -> v end) do
 end
 ```
 
-It is extraordinarily helpful (and performant!) when working with any collection that has a unique attribute (e.g. Ecto schemas with a primary key):
+It is extraordinarily helpful (and performant) when working with any collection that has a unique attribute (e.g. Ecto schemas with a primary key):
 
 ```elixir
 users = [%User{}, %User{}, %User{}]
@@ -320,26 +311,21 @@ users_by_id = index_by(users, & &1.id)
 #   3 => %User{id: 3}
 # }
 ```
-// TODO: Reference time complexities of Elixir maps
 
 This small but extremely powerful change makes enables the use of the functions in the `Map` module (and its `O(n log n)`) performance when accessing elements in a collection.
 
-In the department example from above, the implementation can now be:
+Continuing on from the department example above, the `update/2` callback of the LiveComponent can build the indexed list and assign it to the socket. Any and all callbacks which would otherwise need to traverse the list repeatedly can now have near constant-time access to any member of the list provided it has department IDs.
+
+The implementation might now look something like:
+
 ```elixir
 def update(assigns, socket) do
   %{departments: departments} = assigns
   departments_by_id = index_by(departments, & &1.id)
   {:ok, assign(socket, :departments_by_id, departments_by_id)}
 end
-```
 
-Index the departments in the update callback to pay the cost of iterating the large list up-front
-
-Then, when building a relation map of `%{department => parent_department}`, the algorithm has a worst-case complexity of `O(n)`.
-
-
-```elixir
-def handle_event("build-list", params, socket) do
+def handle_event("build-hierarchy", params, socket) do
   %{"department_id" => department_id} = params
   %{departments_by_id: departments_by_id} = socket.assigns
   Enum.reduce(departments_by_id, %{}, fn {_dept_id, department}, acc ->
@@ -359,7 +345,7 @@ users_by_id = index_by(users, & &1.id)
 user = users_by_id[user_id]
 
 # Retrieve a list of users given a list of IDs:
-# O(n log n) versus Enum.filter - O(n)
+# Was O(n), is now O(n log n) (when compared to Enum.filter)
 user_ids = [1, 2, 5]
 Map.take(users_by_id, user_ids)
 
@@ -380,7 +366,7 @@ Incorporating `index_by/3` into a codebase is one of the quickest and simplest w
 
 ## You Have N + 1 Queries In Your LiveComponents
 
-This is probably the easiest trap to fall into for people new to LiveView - as soon as a LiveComponent that performs database access is rendered more than once, it becomes an N + 1 query problem. N + 1 queries are some of the most common culprits of poor web app performance.
+This is probably the easiest and most detrimental performance trap to fall into. As soon as a LiveComponent that performs database access is rendered more than once, it becomes an N + 1 query problem. Eliminating N + 1 queries is one of the best ways to improve poor web app performance.
 
 ### Example
 
@@ -418,15 +404,13 @@ def update(assigns, socket) do
 end
 ```
 
-The problem is not immediately obvious - and it's killing the app's performance
-
-Because the LiveComponent is rendered as part of a list comprehension (`for={user <- @users}`) the `Repo.all` operation is an N + 1 Query - every `UserDetailComponent` rendered issues a DB query. Showing 10 users issues 10 queries, plus 1 for the LiveView to retrieve all Users. 25 users issues 26 queries. 50 users issues 51 queries, and so on.
+Because the LiveComponent is rendered as part of a list comprehension (`for={user <- @users}`), the `Repo.all` operation is an N + 1 query. Every `UserDetailComponent` rendered issues a DB query. Showing 10 users issues 10 queries, plus 1 for the LiveView to retrieve all Users. 25 users issues 26 queries. 50 users issues 51 queries, and so on.
 
 ### What to do Instead
 
 The [preload/1](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveComponent.html#c:preload/1) callback was designed to solve exactly this problem.
 
-Preload takes, as its only argument, a list of each component's assigns. It returns an updated list of assigns which the component receives in its `update/2` callback
+Preload takes, as its only argument, a list of each component's assigns. It returns an updated list of assigns (in the same order in which it was received) which the component receives in its `update/2` callback
 
 With `preload/1` implemented, `UserDetailComponent` now looks like:
 
