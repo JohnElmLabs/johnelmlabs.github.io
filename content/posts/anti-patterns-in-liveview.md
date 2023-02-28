@@ -4,7 +4,7 @@ date: 2023-02-25T13:37:13-06:00
 draft: true
 ---
 
-Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. Below are some of the most common mistakes people make when writing LiveView applications and their solutions.
+Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. Learn about some of the most common mistakes people make when writing LiveView applications and their solutions.
 
 In short:
 
@@ -437,6 +437,6 @@ The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserD
 
 ## Conclusion
 
-Following the above advice will keep a LiveView application performant, easy to reason about, and easy to test.
+Following the above four tips will keep LiveView applications performant, easy to reason about, and easy to test.
 
-By properly separating the concerns of LiveView and the application's logic in LiveView and LiveComponent callbacks, keeping code readable and easy to debug by avoiding "function head soup", indexing large lists, and properly preloading LiveComponents, your LiveView application will be smooth as butter for years to come.
+By properly separating the concerns of LiveView and the application's logic in LiveView and LiveComponent callbacks, keeping code readable and easy to debug by avoiding "function head soup", indexing large lists, and properly preloading LiveComponents, some of LiveView's most common pitfalls can be avoided.
