@@ -437,3 +437,6 @@ The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserD
 
 ## Conclusion
 
+Following the above advice will keep a LiveView application performant, easy to reason about, and easy to test.
+
+By properly separating the concerns of LiveView and the application's logic in LiveView and LiveComponent callbacks, keeping code readable and easy to debug by avoiding "function head soup", indexing large lists, and properly preloading LiveComponents, your LiveView application will be smooth as butter for years to come.
