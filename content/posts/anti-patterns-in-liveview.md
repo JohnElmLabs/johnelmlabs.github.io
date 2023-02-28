@@ -432,7 +432,7 @@ def update(assigns, socket) do
 end
 ```
 
-The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserDetailComponent`s are rendered on the page, only two queries are issued (One for all users and one for all departments). Notice, too, that `index_by/3` is used in order to avoid iterating over the list of departments for each user.
+The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserDetailComponent`s are rendered on the page, only two queries are issued (One for all users and one for all departments). Notice, too, that `index_by/3` is used in order to avoid iterating over the list of departments for each user, thus avoiding an inefficient `O(n^2)` traversal.
 
 
 ## Conclusion
