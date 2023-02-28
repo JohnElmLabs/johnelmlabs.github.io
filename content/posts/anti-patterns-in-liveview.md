@@ -1,36 +1,39 @@
 ---
 title: "Phoenix LiveView Anti Patterns"
 date: 2023-02-25T13:37:13-06:00
-draft: true
+draft: false
 ---
 
-Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. Learn about some of the most common mistakes people make when writing LiveView applications and their solutions.
+Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. The LiveView paradigm departs from the traditional front-end/back-end split of many web apps. DOM updates happen through a persistent websocket connection instead of requiring a round-trip to a backend server.
 
-In short:
+This departure from more common styles of web development can lead to some mistakes if one is unfamiliar with, or new to, LiveView. The most common is an improper separation of concerns with respect to LiveView's callbacks and the application's logic. This most commonly manifests as passing the entire socket struct to functions.
 
-- Don't pass the socket as an argument to functions
-- Function heads should pattern match only on what is necessary to determine code control flow
-- Index lists for improved performance
-- Preload LiveComponent assigns to avoid N + 1 queries
+Another common problem is abuse of pattern matching inside of the function head. This leads to "function head soup" where it becomes difficult to discern the responsibility of each function head at a glance.
+
+Further, when working with large lists, which is common in Elixir and LiveView, it can be beneficial to index them for improved performance. Indexing is not just for the database - Elixir and LiveView can take advantage of indexing, too.
+
+Finally, failing to use the `preload/1` callback when redering LiveComponents causes N + 1 queries and degrades LiveView performance rapidly as the application grows.
+
+These anti-pattenrns are discussed in more detail below:
 
 ## Don't pass the socket as an argument to functions
 
-Much in the same way HTTP request objects are not passed to business logic functions, never pass the socket struct to functions in LiveViews and LiveComponents. LiveView is built on top of Elixir GenServers and GenServers blur the line between client and server partially due to the fact that most, if not all, of the code lives in the same file. The classic `View -> Controller -> Context` separation of "regular" Phoenix apps is not available to us in LiveView. It can be difficult to know where to draw the boundary line. With the exception of the `socket.assigns`, the socket should be considered opaque. They are implementation details of LiveView that application logic does not need to concern itself with.
+Much in the same way HTTP request objects are not passed to business logic functions, never pass the socket struct to functions in LiveViews and LiveComponents. LiveView is built on top of Elixir GenServers. GenServers blur the line between client and server partially due to the fact that most, if not all, of the code lives in the same file. The classic `View -> Controller -> Context` separation of "regular" Phoenix apps is not available to us in LiveView. It can be difficult to know where to draw the boundary line. With the exception of the `socket.assigns`, the socket should be considered opaque. They are implementation details of LiveView that application logic does not need to concern itself with.
 
 ### Why is this a problem?
 - Functions only needs the socket's assigns or a subset of them. Passing the entire socket violates the [You aren't gonna need it](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it) principle
 - Passing the socket as an argument violates proper separation of concerns. Live callbacks should be the only places the application calls LiveView methods that operate on the socket such as `assign/2`, `assign/3`, `push_navigate/2`, etc. All other functions should not accept a `socket` argument.
 - Functions that take sockets as arguments are brittle, especially if they pattern matches on the `socket.assigns`. The function has an implicit dependency on the functions that were invoked before it, the state of the `socket.assigns`, and LiveView itself.
-  - If the function is invoked out of order or the state of the socket is slightly off, a `(FunctionClauseError) no function clause matching` will be raised
+  - If the function is invoked out of order or the state of the socket does not match expectations, a `(FunctionClauseError) no function clause matching` will be raised
     - A `FunctionClauseError`, especially with multiple function heads, is a headache to debug - That will be covered in more detail further on
 
 In short:
-- LiveView callbacks should handle the actual assignment of values to the socket (`assign/2`, `assign/3`)
-- Application logic should calculate the assigns and returns them to the lifecycle callbacks. Business logic functions should not take the socket as one of its arguments.
+- LiveView callbacks should handle assignment of values to the socket (`assign/2`, `assign/3`) as well as redirects (`push_navigate/2`)
+- Application logic should calculate assigns and return them to the lifecycle callbacks. Business logic functions should not take the socket as one of its arguments.
 
 ### Example
 
-In the code below, the socket is piped through some functions to retrieve data and assign it before being rendered:
+In the code below, the socket is piped through some functions to retrieve data and assign it before being rendered. The pipeline reads nicely and looks "elixir-y" but it has problems that are not immediately obvious:
 
 ```elixir
 def mount(_, _, socket) do
@@ -128,11 +131,11 @@ Binding every variable in a `params` or `socket.assigns` on LiveView or LiveComp
 Pattern matching in function heads should be used as control flow: Match on only the values needed to determine which function head to take. Function heads should not unwrap every value the function will use.
 
 ### Why is this a problem?
-If a function head fails to match on the passed arguments, a cryptic `(FunctionClauseError) no function clause matching` error is raised. With more than one function head (common with LiveComponent's `update/2` callback), the stacktrace will always point to the first callback/function implementation - which is not necessarily the function head that failed to match. Determining where the actual problem lies requires reverse engineering not only which function head should have been taken, but which value was missing and/or incorrect. In LiveViews and LiveComponents with large assigns maps, this can be difficult to spot.
+If a function head fails to match on the passed arguments, a cryptic `(FunctionClauseError) no function clause matching` error is raised. With more than one function head (common with LiveComponent's `update/2` callback), the stacktrace will always point to the first callback/function implementation - which is not necessarily the function head that failed to match. Determining where the actual problem lies requires reverse engineering not only which function head should have been taken, but which value was missing and/or incorrect. This can be difficult to spot, especially in LiveViews and LiveComponents with large assigns maps.
 
 ### Example
 
-Imagine a new user form with several inputs. The form is simple, but different code paths must be taken depending on which authorization provider the user chooses: Username/password, Sign in with Github, Google, Facebook, Sign in with Apple, etc.
+Imagine a new user form with several inputs. The form is simple and requires different code paths to be taken depending on which authorization provider the user chooses: Username/password, Sign in with Github, Google, Facebook, Sign in with Apple, etc.
 
 ```html
 <.form for={@form} phx-change="validate" phx-submit="create-user">
@@ -188,11 +191,11 @@ In this way, the function:
 - Has vastly improved readability
 - Receives improved error messages
   - Raises a `(MatchError)` instead of a `(FunctionClauseError)`
-  - The line number in the stacktrace is accurate
-    - `MatchError` points to exactly the line where the match failed. `FunctionClauseError` always points to the first function/callback's line number
-  - It's easier to figure out what assign is missing (Drop an `IO.inspect` on the assigns before the pattern match in the function body)
+    - `MatchError` points to the line where the match failed
+    - `FunctionClauseError`, in contrast, always points to the first function's line number
+  - It's easier to figure out what assign(s) are missing (Drop an `IO.inspect` on the assigns before the pattern match in the function body)
 
-Re-writing the above example to follow the rules laid out above, how much easier is it now to spot the Facebook code path?
+Re-writing the above example to follow the rules laid out above, it is much easier to spot the Facebook code path:
 
 ```elixir
 def handle_event("validate", %{"authorization_provider" => "yubikey"} = params, socket) do
@@ -240,7 +243,7 @@ def handle_event("validate", %{"authorization_provider" => "username_password"} 
 end
 ```
 
-The function heads can be scanned quickly and easily - saving time and frustration.
+The function heads can be scanned quickly, easily, and the "why" of "why would this code path be taken?" is obvious.
 
 ## Indexing: Not Just For the Database
 
@@ -274,7 +277,7 @@ end
 
 The problem is performance is going to suffer in a production environment when customers who have hundreds, or even thousands, of departments (or any list item) are using the application.
 
-This is particularly problematic because the lack of an explicit C-style loop construct makes it easier to incidentally write inefficient "loops" in Elixir, especially for those new to the language.
+This can become particularly problematic because the lack of an explicit C-style loop construct makes it easy to incidentally write inefficient "loops" in Elixir, especially for those new to the language.
 
 ### Example
 
@@ -312,9 +315,9 @@ users_by_id = index_by(users, & &1.id)
 # }
 ```
 
-This small but extremely powerful change makes enables the use of the functions in the `Map` module (and its `O(n log n)`) performance when accessing elements in a collection.
+This small but extremely powerful change enables the use of the functions in the `Map` module (and its `O(n log n)`) performance for accessing elements in a collection.
 
-Continuing on from the department example above, the `update/2` callback of the LiveComponent can build the indexed list and assign it to the socket. Any and all callbacks which would otherwise need to traverse the list repeatedly can now have near constant-time access to any member of the list provided it has department IDs.
+To continue the above department example, the `update/2` callback of the LiveComponent can build the indexed list and assign it to the socket. Any and all callbacks which would otherwise need to traverse the list repeatedly can now have near constant-time access to any member of the list - provided it has department IDs.
 
 The implementation might now look something like:
 
@@ -357,20 +360,20 @@ Map.keys(users_by_id)
 
 # Filter out users
 non_admin_user_ids = [10, 11, 12]
-Map.drop(non_admin_users)
+Map.drop(non_admin_user_ids)
 ```
 
 In situations where a large list does not have a unique property to index on, `Enum.group_by/3` can be used in its place.
 
-Incorporating `index_by/3` into a codebase is one of the quickest and simplest ways to get vastly improved performance - especially where large lists are involved.
+Incorporating `index_by/3` into a codebase is one of the quickest and simplest ways to get vastly improved performance, especially where large lists are involved.
 
 ## You Have N + 1 Queries In Your LiveComponents
 
-This is probably the easiest and most detrimental performance trap to fall into. As soon as a LiveComponent that performs database access is rendered more than once, it becomes an N + 1 query problem. Eliminating N + 1 queries is one of the best ways to improve poor web app performance.
+This is probably the easiest and most detrimental performance trap to fall into. As soon as a LiveComponent that performs database access is rendered more than once, it becomes an N + 1 query problem. N + 1 queries put undue strain on the database server and greatly increase the time it takes to render the DOM.
 
 ### Example
 
-Consider a LiveComponent that displays information about a user with a form to make changes to said user.
+Consider a LiveComponent that displays a user and the departments that the user is a member of. It includes a form to add or remove departments.
 
 The responsibility of individual user changesets and their forms is encapsulated in a `LiveComponent` - so far so good.
 
@@ -404,7 +407,7 @@ def update(assigns, socket) do
 end
 ```
 
-Because the LiveComponent is rendered as part of a list comprehension (`for={user <- @users}`), the `Repo.all` operation is an N + 1 query. Every `UserDetailComponent` rendered issues a DB query. Showing 10 users issues 10 queries, plus 1 for the LiveView to retrieve all Users. 25 users issues 26 queries. 50 users issues 51 queries, and so on.
+Because the LiveComponent is rendered as part of a list comprehension (`for={user <- @users}`), the `Repo.all` operation introduces an N + 1 query. Every `UserDetailComponent` rendered issues a DB query. Showing 10 users issues 10 queries, plus 1 query for the LiveView to retrieve all Users. 25 users issues 26 queries, 50 users issues 51 queries, and so on.
 
 ### What to do Instead
 
@@ -433,6 +436,7 @@ end
 ```
 
 The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserDetailComponent`s are rendered on the page, only two queries are issued (One for all users and one for all departments). Notice, too, that `index_by/3` is used in order to avoid iterating over the list of departments for each user, thus avoiding an inefficient `O(n^2)` traversal.
+
 
 
 ## Conclusion

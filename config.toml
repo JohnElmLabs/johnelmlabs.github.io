@@ -7,5 +7,5 @@ summaryLength = 20
 [[menu.main]]
 identifier = "about"
 name = "About"
-url = "/about/"
+url = "/about"
 weight = 10
