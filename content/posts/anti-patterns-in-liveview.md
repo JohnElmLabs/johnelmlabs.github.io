@@ -259,9 +259,9 @@ Working with lists underpins functional programming and Elixir is no different. 
 
 ### Why is this a problem?
 
-Lists, unlike arrays, are not stored contiguously in memory. As such, they must be iterated on in order to retrieve values. This means performance degrades linearly as the list grows due to the `O(n)` time complexity.
+Lists in Elixir are linked lists and as such are not stored contiguously in memory. This means that lists must be iterated in order to retrieve values. As a consequence of this fact, performance degrades linearly as the list grows due to the `O(n)` time complexity.
 
-Consider a scenario where a department is retrieved from a list of departments when a user selects a department from a dropdown. When a user selects a department from the dropdown, the `handle_event/3` callback receives its ID.
+Consider a scenario where a department is retrieved from a list of departments when a user selects a department from a dropdown. The `handle_event/3` callback receives the department's ID.
 
 That's pretty easy to take care of, and in a dev environment with a relatively low number of departments, `Enum.find/3` does the job well:
 
@@ -315,7 +315,7 @@ users_by_id = index_by(users, & &1.id)
 # }
 ```
 
-This small but extremely powerful change enables the use of the functions in the `Map` module (and its `O(n log n)`) performance for accessing elements in a collection.
+This small but extremely powerful function enables the use of the functions in the `Map` module (and its `O(n log n)`) performance for accessing elements in a collection.
 
 To continue the above department example, the `update/2` callback of the LiveComponent can build the indexed list and assign it to the socket. Any and all callbacks which would otherwise need to traverse the list repeatedly can now have near constant-time access to any member of the list - provided it has department IDs.
 
@@ -337,6 +337,8 @@ def handle_event("build-hierarchy", params, socket) do
 end
 ```
 
+The building of the simple department hierarchy has dropped its time complexity by an order of magnitud from `O(n^2)` to `O(n)`. The list is traversed just once and each parent department is found in a near constant-time lookup in the indexed map.
+
 `index_by/3` is useful in a whole host of situations. Consider a couple of other examples:
 
 ```elixir
@@ -352,15 +354,15 @@ user = users_by_id[user_id]
 user_ids = [1, 2, 5]
 Map.take(users_by_id, user_ids)
 
+# Filter out users (instead of Enum.reject)
+non_admin_user_ids = [10, 11, 12]
+Map.drop(non_admin_user_ids)
+
 # Get the list of users back
 Map.values(users_by_id)
 
 # Get list of all user IDs
 Map.keys(users_by_id)
-
-# Filter out users
-non_admin_user_ids = [10, 11, 12]
-Map.drop(non_admin_user_ids)
 ```
 
 In situations where a large list does not have a unique property to index on, `Enum.group_by/3` can be used in its place.
