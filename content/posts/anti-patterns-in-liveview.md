@@ -12,9 +12,9 @@ Another common problem is abuse of pattern matching inside of the function head.
 
 Further, when working with large lists, which is common in Elixir and LiveView, it can be beneficial to index them for improved performance. Indexing is not just for the database - Elixir and LiveView can take advantage of indexing, too.
 
-Finally, failing to use the `preload/1` callback when redering LiveComponents causes N + 1 queries and degrades LiveView performance rapidly as the application grows.
+Finally, failing to use the `preload/1` callback when rendering LiveComponents causes N + 1 queries and degrades LiveView performance rapidly as the application grows.
 
-These anti-pattenrns are discussed in more detail below:
+These anti-patterns are discussed in more detail below:
 
 ## Don't pass the socket as an argument to functions
 
@@ -337,7 +337,7 @@ def handle_event("build-hierarchy", params, socket) do
 end
 ```
 
-The building of the simple department hierarchy has dropped its time complexity by an order of magnitud from `O(n^2)` to `O(n)`. The list is traversed just once and each parent department is found in a near constant-time lookup in the indexed map.
+The building of the simple department hierarchy has dropped its time complexity by an order of magnitude from `O(n^2)` to `O(n)`. The list is traversed just once and each parent department is found in a near constant-time lookup in the indexed map.
 
 `index_by/3` is useful in a whole host of situations. Consider a couple of other examples:
 
@@ -443,6 +443,6 @@ The N + 1 problem is eliminated with `preload/1`. Now, no matter how many `UserD
 
 ## Conclusion
 
-Following the above four tips will keep LiveView applications performant, easy to reason about, and easy to test.
+Following the above four tips will help keep LiveView applications performant, easy to reason about, and easy to test.
 
-By properly separating the concerns of LiveView and the application's logic in LiveView and LiveComponent callbacks, keeping code readable and easy to debug by avoiding "function head soup", indexing large lists, and properly preloading LiveComponents, some of LiveView's most common pitfalls can be avoided.
+Properly separating LiveView concerns and application logic makes LiveViews much easier to reason about and change. By avoiding function head soup, one can reduce the time it takes to debug errors where assigns are missing. For a quick and easy performance win, incorporate `index_by/3` into the codebase and use it in place of functions that require iterating the entire list. Finally, preload assigns for LiveComponents that are rendered multiple times in a single LiveView. Combined with the indexing of assigns this can greatly speed up your application and reduce the load on the database.
