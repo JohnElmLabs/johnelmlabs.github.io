@@ -4,9 +4,9 @@ date: 2023-02-25T13:37:13-06:00
 draft: false
 ---
 
-Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. The LiveView paradigm departs from the traditional front-end/back-end split of many web apps. DOM updates happen through a persistent websocket connection instead of requiring a round-trip to a backend server.
+Phoenix LiveView enables rapid development of interactive web apps. It's extremely powerful and an absolute pleasure to write every day. The LiveView paradigm differs from the traditional front-end/back-end split of most web apps written today. DOM updates happen through a persistent websocket connection instead of requiring a round-trip to a backend server.
 
-This departure from more common styles of web development can lead to some mistakes if one is unfamiliar with, or new to, LiveView. The most common is an improper separation of concerns with respect to LiveView's callbacks and the application's logic. This most commonly manifests as passing the entire socket struct to functions.
+This departure from more common styles of web development can lead to some pitfalls if one is unfamiliar with, or new to, LiveView. The most common is an improper separation of concerns with respect to LiveView's callbacks and the application's business logic. This generally manifests as passing the entire socket struct to functions.
 
 Another common problem is abuse of pattern matching inside of the function head. This leads to "function head soup" where it becomes difficult to discern the responsibility of each function head at a glance.
 
